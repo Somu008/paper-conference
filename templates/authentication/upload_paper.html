@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script type='text/javascript'>
+    function addFields(){
+        // Generate a dynamic number of inputs
+        var number = document.getElementById("Co_author").value;
+        // Get the element where the inputs will be added to
+        var container = document.getElementById("container");
+        // Remove every children it had before
+        while (container.hasChildNodes()) {
+            container.removeChild(container.lastChild);
+        }
+        for (i=0;i<number;i++){
+            // Append a node with a random text
+            container.appendChild(document.createTextNode("Co_author" + (i+1)));
+            // Create an <input> element, set its type and name attributes
+            var input = document.createElement("input");
+            input.type = "text";
+            input.name = "co_author" + i;
+            container.appendChild(input);
+            // Append a line break 
+            container.appendChild(document.createElement("br"));
+        }
+    }
+</script>
+<body>
+    <h3>Please add your details regarding your research paper as the format suggested: </h3>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="Author_name">Author full name</label>
+            <input type="text" class="form-control" id="Author_name" name="Author_name" placeholder="Should contain your first name following your last name" Required>
+        </div>
+        <div class="form-group">
+            <label for="Co_author">Number of Co-Author: </label>
+            <input type="number" max="4" id="Co_author" name="Co_author" oninput="addFields()" value="">
+            <!-- <a href="#" id="filldetails" onclick="addFields()">Name of the Co-Author:</a> -->
+            <div id="container"/>
+        </div>
+        <div class="form-group">
+            <label for="Mname">Mentor Full name</label>
+            <input type="text" class="form-control" id="Mname" name="Mname" placeholder="Enter the Mentor's name" >
+        </div>
+        <div class="form-group">
+            <label for="Institute">Institute</label>
+            <input type="text" class="form-control" id="Institute" name="Institute" placeholder="Enter Your Institute name you represent">
+        </div>
+        <div class="form-group">
+            <label for="domain">Domain</label>
+            <input type="domain" class="form-control" id="domain" name="domain" placeholder="damain category" Required>
+        </div>
+        <div class="form-group">
+            <label for="paper">Upload your research paper:</label></br>
+            <input type="file" class="form-control" id="paper" name="paper" placeholder="Research paper" >
+        </div>
+        <!-- <div class="form-group">
+            <label for="pass2">Confirm Password</label>
+            <input type="password" class="form-control" id="pass2" name="pass2" placeholder="Confirm Your Password" Required>
+        </div>
+        <div class="form-group">
+            <input type="radio" name="group" value="group1">Author
+            <input type="radio" name="group" value="group2">Reviewer<br>
+        </div>  -->
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+</body>
+</html>
