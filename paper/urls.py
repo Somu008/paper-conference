@@ -10,5 +10,4 @@ urlpatterns = [
     path('', views.papers, name='paper_list'),
     path("<int:pk>/report", views.stream_file, name="report_pdf"),
     path('<id>/<action>', views.update_paper, name="update_paper")
-    
 ]

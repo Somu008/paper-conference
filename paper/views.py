@@ -6,10 +6,11 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import authenticate, login, logout, models
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.urls import reverse_lazy, reverse
 from authentication.utils import is_reviewer, get_reviewer_with_min_papers
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
 from django.conf import settings
 
 from .models import Paper
@@ -51,10 +52,15 @@ def paper_detail(request, id):
 
 @login_required
 def papers(request):
+    papers = []
     if is_reviewer(request.user):
-        return redirect("authentication:profile")
+        if request.user.reviewerprofile_set.get().state != 'pending':
+            messages.error(request, 'Please complete your profile first')
+            return redirect('reviewer:profile')
 
-    papers = Paper.objects.filter(author_id=request.user.id)
+        papers = get_list_or_404(Paper, reviewer_id=request.user)
+    else:
+        papers = Paper.objects.filter(author_id=request.user.id)
     return render(request, "paper/all.html", { 'papers': papers })
 
 @user_passes_test(is_reviewer)
@@ -65,7 +71,7 @@ def update_paper(request, id, action):
 
 
     paper.save()
-    comment = request.POST["comment"]
+    comment = request.POST.get("comment")
     paper.author_id.email_user("Upadate on your paper", f"Paper with id {paper.pk} has been {paper.status}\n REASON: {comment}", settings.EMAIL_HOST_USER)
 
     return redirect("paper:paper_detail", id)

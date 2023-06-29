@@ -11,7 +11,7 @@
 </html>
 </head>
 <body>
-    
+
     {% for message in messages %}
     <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
         <strong>Message:</strong> {{ message }}
@@ -20,56 +20,67 @@
         </button>
     </div>
     {% endfor %}
-    
+
     <h3>Fill up your details</h3>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
             <label for="fname">First Name</label>
-            <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter Your First Name" value="{{me.first_name}}" required>
+            <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter Your First Name" value="{{me.first_name}}">
         </div>
         <div class="form-group">
             <label for="lname">Last Name</label>
-            <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Your Last Name" value="{{me.last_name}}" required>
+            <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Your Last Name" value="{{me.last_name}}">
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Enter Your Email Address" value="{{me.email}}" required>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Enter Your Email Address" value="{{me.email}}">
         </div>
         <div class="form-group">
             <label for="Profession">Profession:</label>
             <select class="form-control" name="profession" id="profession">
-                <option value="" selected="selected">Professor</option>
+                <option value="{{rprofile.profession}}" selected="selected">Professor</option>
               </select>
             </div>
         <div class="form-group">
             <label for="ins_name">Institue name:</label>
-            <input type="ins_name" class="form-control" id="ins_name" name="ins_name" placeholder="Enter Institue name" required>
+            <input value="{{rprofile.institute}}" type="text" class="form-control" id="ins_name" name="ins_name" placeholder="Enter Institue name">
         </div>
         <div class="form-group">
             <label for="H_Q">Higher Qualification: </label>
-            <input type="H_Q" class="form-control" id="H_Q" name="H_Q" placeholder="Enter Qualification" required>
+            <input type="H_Q" class="form-control" id="H_Q" name="H_Q" placeholder="Enter Qualification" value="{{rprofile.qualification}}">
         </div>
         <div class="form-group">
             <label for="domain">Domain:</label>
             <select class="form-control" name="domain" id="domain">
-                <option value="" selected="selected">AIML</option>
-                <option value="">Cyber-security</option>
-                <option value="">Cloud technology</option>
-                <option value="">Networking</option>
+                <option value="aiml">AIML</option>
+                <option value="cyber-security">Cyber-security</option>
+                <option value="clooud">Cloud technology</option>
+                <option value="networking">Networking</option>
             </select>
         </div>
         <div class="form-group">
             <label for="resume">Upload your Resume:</label></br>
-            <input type="file" class="form-control" id="resume" name="resume" placeholder="Resume" >
+            <input type="file" class="form-control" id="resume" name="resume" placeholder="Resume" value="{{rprofile.resume}}">
+            {%if rprofile.resume%}
+            Uploaded resume: <a href="{%url 'reviewer:resume'%}">{{rprofile.resume.name}}</a>
+            {%endif%}
         </div>
+        {%if rprofile.state == "draft" %}
         <button type="button" id="hide" class="btn btn-primary">Edit</button>
-        <button id="save" type="button" class="btn btn-primary" style="display: none;">Save Changes</button>
+        <button id="save" type="submit" class="btn btn-primary" style="display: none;">Save Changes</button>
+        {%endif%}
     </form>
-    <form method="post" action="/profile/submit">
+    {% if rprofile.state == "draft" %}
+    <form method="post" action="{%url 'reviewer:submit_profile'%}">
         {%csrf_token%}
         <button id="submit" type="submit" class="btn btn-primary">Submit</button>
     </form>
+    {% elif rprofile.state == "pending" %}
+    <div class="message">Your profile is pending for review</div>
+    {% elif rprofile.state == "accepted" %}
+    <a href="{%url 'paper:paper_list' %}">Papers assigned</a>
+    {%endif%}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script>
 const tags = document.querySelectorAll(".form-control");

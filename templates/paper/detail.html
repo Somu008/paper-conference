@@ -9,10 +9,11 @@
     <h1>{{paper.name}}</h1>
     <h2>{{paper.mentor}}</h2>
     <p>{{paper.status}}</p>
+    <p>Uploaded paper: <a href="{%url 'paper:report_pdf' paper.id %}">{{paper.name}}</a></p>
 
-    {%if is_reviewer%}
-    
-   
+    {%if is_reviewer and paper.status == "pending" %}
+
+
     <form method="post" action="/paper/{{paper.id}}/approve">
         {%csrf_token%}
         <button type="submit">Approve</button>
@@ -23,7 +24,7 @@
         <button type="submit">Reject</button>
     </form>
     {%endif%}
-    
+
     <!-- <script>
         const buttons = document.querySelectorAll('button')
 

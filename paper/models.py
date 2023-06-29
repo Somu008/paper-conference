@@ -1,3 +1,4 @@
+from os import name
 from django.db import models
 from django.conf import settings
 
@@ -15,3 +16,6 @@ class Paper(models.Model):
         ("rejected", "rejected")
     ))
     reviewer_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name="reviewer")
+
+    def __str__(self) -> str:
+        return f"Paper {self.pk} by {self.name}"
