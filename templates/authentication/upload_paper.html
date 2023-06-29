@@ -24,14 +24,14 @@
             input.type = "text";
             input.name = "co_author" + i;
             container.appendChild(input);
-            // Append a line break 
+            // Append a line break
             container.appendChild(document.createElement("br"));
         }
     }
 </script>
 <body>
     <h3>Please add your details regarding your research paper as the format suggested: </h3>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
             <label for="Author_name">Author full name</label>

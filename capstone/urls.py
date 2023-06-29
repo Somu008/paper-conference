@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('authentication.urls')),
     path('', include('Reviwer_details.urls')),
     path('paper/', include('paper.urls'))
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+    + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

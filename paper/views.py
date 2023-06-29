@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -16,15 +16,14 @@ from .models import Paper
 # from . tokens import generate_token
 
 
-def paper(request):
+def paper(request: HttpRequest):
     if request.method == "POST":
         Author_name = request.POST['Author_name']
         Co_author = request.POST['Co_author']
         Mname = request.POST['Mname']
         Institute = request.POST['Institute']
         domain = request.POST['domain']
-        paper = request.POST['paper']
-
+        paper = request.FILES['paper']
         authors = [request.POST[f"co_author{i}"] for i in range(int(Co_author))]
 
         reviewer = get_reviewer_with_min_papers()
@@ -54,7 +53,7 @@ def paper_detail(request, id):
 def papers(request):
     if is_reviewer(request.user):
         return redirect("authentication:profile")
-    
+
     papers = Paper.objects.filter(author_id=request.user.id)
     return render(request, "paper/all.html", { 'papers': papers })
 
@@ -63,7 +62,7 @@ def update_paper(request, id, action):
     paper = get_object_or_404(Paper, pk=id)
 
     paper.status = "accepted" if action == "approve" else "rejected"
-    
+
 
     paper.save()
     comment = request.POST["comment"]
@@ -74,9 +73,8 @@ def update_paper(request, id, action):
 def stream_file(request, pk):
     paper = get_object_or_404(Paper, id=pk)
     response = HttpResponse()
-    if not paper.paper:
-        return HttpResponse("No Thumbnail")
+
     response['Content-Type'] = "application/pdf"
     response['Content-Length'] = len(paper.paper)
-    response.write(paper.paper)
+    response.write(paper.paper.read())
     return response
