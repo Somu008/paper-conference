@@ -8,4 +8,10 @@ class Paper(models.Model):
     authors = models.TextField(null=True)
     mentor = models.CharField(max_length=20,null=True)
     institute = models.CharField(max_length=20,null=True)
-    paper = models.FileField(null=True, upload_to="uploads")
+    paper = models.FileField(null=True, upload_to="uploads/")
+    status=models.CharField(default="pending", max_length=20, choices=(
+        ("pending", "pending"),
+        ("approved", "approved"),
+        ("rejected", "rejected")
+    ))
+    reviewer_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name="reviewer")

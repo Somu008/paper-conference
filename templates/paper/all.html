@@ -1,0 +1,7 @@
+{%for paper in papers %}
+<section>
+    <h2>{{paper.name}}</h2>
+    <p>{{paper.status}}</p>
+    <a href="/paper/{{paper.id}}">View</a>
+</section>
+{%endfor%}

@@ -1,0 +1,109 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviewer Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</body>
+</html>
+</head>
+<body>
+    
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <strong>Message:</strong> {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    
+    <h3>Fill up your details</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="fname">First Name</label>
+            <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter Your First Name" value="{{me.first_name}}" required>
+        </div>
+        <div class="form-group">
+            <label for="lname">Last Name</label>
+            <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Your Last Name" value="{{me.last_name}}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Enter Your Email Address" value="{{me.email}}" required>
+        </div>
+        <div class="form-group">
+            <label for="Profession">Profession:</label>
+            <select class="form-control" name="profession" id="profession">
+                <option value="" selected="selected">Professor</option>
+              </select>
+            </div>
+        <div class="form-group">
+            <label for="ins_name">Institue name:</label>
+            <input type="ins_name" class="form-control" id="ins_name" name="ins_name" placeholder="Enter Institue name" required>
+        </div>
+        <div class="form-group">
+            <label for="H_Q">Higher Qualification: </label>
+            <input type="H_Q" class="form-control" id="H_Q" name="H_Q" placeholder="Enter Qualification" required>
+        </div>
+        <div class="form-group">
+            <label for="domain">Domain:</label>
+            <select class="form-control" name="domain" id="domain">
+                <option value="" selected="selected">AIML</option>
+                <option value="">Cyber-security</option>
+                <option value="">Cloud technology</option>
+                <option value="">Networking</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="resume">Upload your Resume:</label></br>
+            <input type="file" class="form-control" id="resume" name="resume" placeholder="Resume" >
+        </div>
+        <button type="button" id="hide" class="btn btn-primary">Edit</button>
+        <button id="save" type="button" class="btn btn-primary" style="display: none;">Save Changes</button>
+    </form>
+    <form method="post" action="/profile/submit">
+        {%csrf_token%}
+        <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script>
+const tags = document.querySelectorAll(".form-control");
+const hide = document.getElementById("hide");
+
+hide && hide.addEventListener("click", function () {
+    const submit_button = document.getElementById("save");
+    if (submit_button.style.display === "none") {
+        hide.innerHTML = "Cancel";
+        submit_button.style.display = "";
+        [...tags].map(t => {
+            t.removeAttribute('readonly')
+            t.removeAttribute('disabled')
+        })
+    } else {
+        hide.innerHTML = "Edit";
+        submit_button.style.display = "none";
+        [...tags].map(t => {
+            t.setAttribute('readonly', '')
+            t.setAttribute('disabled', '')
+        })
+    }
+    return false;
+})
+if (hide) {  // Only apply if, required buttons are present
+    // for (let p = 0; p < tags.length; p++) {
+    //     tags[p].setAttribute("readonly", "");
+    //     tags[p].setAttribute("disabled", "");
+    // }
+    [...tags].map(t => {
+        t.setAttribute('readonly', '')
+        t.setAttribute('disabled', '')
+    })
+}
+    </script>
+</body>
+</html>

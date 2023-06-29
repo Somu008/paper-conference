@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.core.mail import EmailMessage, send_mail
@@ -10,10 +10,14 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import authenticate, login, logout
 from . tokens import generate_token
+from .utils import is_reviewer
 
 # Create your views here.
-def home(request):
-    return render(request, "authentication/index.html")
+def home(request: HttpRequest):
+    ctx = {}
+    if request.user.is_authenticated:
+        ctx['user'] = request.user
+    return render(request, "authentication/index.html", ctx)
 
 def signup(request):
     if request.method == "POST":
@@ -27,19 +31,19 @@ def signup(request):
         
         if User.objects.filter(username=username):
             messages.error(request, "Username already exist! Please try some other username.")
-            return redirect('home')
+            return redirect('authentication:home')
         
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email Already Registered!!")
-            return redirect('home')
+            return redirect('authentication:home')
         
         if len(username)>20:
             messages.error(request, "Username must be under 20 charcters!!")
-            return redirect('home')
+            return redirect('authentication:home')
         
         if pass1 != pass2:
             messages.error(request, "Passwords didn't matched!!")
-            return redirect('home')
+            return redirect('authentication:home')
         
         if not username.isalnum():
             messages.error(request, "Username must be Alpha-Numeric!!")
@@ -82,14 +86,13 @@ def signup(request):
         settings.EMAIL_HOST_USER,
         [myuser.email],
         )
-        email.fail_silently = True
+        email.fail_silently = True 
         email.send()
         
-        return redirect('signin')
+        return redirect('authentication:signin')
         
         
     return render(request, "authentication/signup.html")
-
 
 def activate(request,uidb64,token):
     try:
@@ -104,10 +107,9 @@ def activate(request,uidb64,token):
         myuser.save()
         login(request,myuser)
         messages.success(request, "Your Account has been activated!!")
-        return redirect('signin')
+        return redirect('authentication:signin')
     else:
         return render(request,'activation_failed.html')
-
 
 def signin(request):
     if request.method == 'POST':
@@ -115,23 +117,35 @@ def signin(request):
         pass1 = request.POST['pass1']
         
         user = authenticate(username=username, password=pass1)
-        
+        print("User", user)
         if user is not None:
             login(request, user)
-            fname = user.first_name
-            # messages.success(request, "Logged In Sucessfully!!")
-            return render(request, "authentication/index.html",{"fname":fname})
+            messages.success(request, "Logged In Sucessfully!!")
+            return redirect('authentication:profile')
         else:
             messages.error(request, "Bad Credentials!!")
-            return redirect('home')
+            return redirect('authentication:profile')
     
     return render(request, "authentication/signin.html")
 
-
 def signout(request):
     logout(request)
-    messages.success(request, "Logged Out Successfully!!")
-    return redirect('home')
+    messages.success(request, "Logged out Successfully!!")
+    return redirect('authentication:shome')
 
 def paper_detail(request):
     return render(request, "authentication/paper_detail.html")
+
+def profile(request: HttpRequest):
+    if not request.user.is_authenticated:
+        # TODO: redirect to 403
+        return redirect('authentication:signin')
+
+    if request.method == "POST":
+        # TODO: save values from form
+        pass
+
+    if is_reviewer(request.user):
+        return render(request, "Reviwer_detail/Reviewer_detail.html", { 'me': request.user })
+    
+    return redirect('authentication:home')

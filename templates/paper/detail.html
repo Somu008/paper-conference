@@ -7,5 +7,30 @@
 </head>
 <body>
     <h1>{{paper.name}}</h1>
+    <h2>{{paper.mentor}}</h2>
+    <p>{{paper.status}}</p>
+
+    {%if is_reviewer%}
+    
+   
+    <form method="post" action="/paper/{{paper.id}}/approve">
+        {%csrf_token%}
+        <button type="submit">Approve</button>
+    </form>
+    <form  method="post" action="/paper/{{paper.id}}/reject">
+        {%csrf_token%}
+        <input type="text" name="comment" required>
+        <button type="submit">Reject</button>
+    </form>
+    {%endif%}
+    
+    <!-- <script>
+        const buttons = document.querySelectorAll('button')
+
+        buttons.forEach(button => button.addEventListener('click', function() {
+
+            window.location = `/paper/{{paper.id}}/${this.dataset.id}`
+        }))
+    </script> -->
 </body>
 </html>

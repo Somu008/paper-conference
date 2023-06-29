@@ -17,13 +17,13 @@
     </div>
     {% endfor %}
 
-    <h3>Welcome to GeeksForGeeks!</h3>
+    <h3>Welcome to Conference!</h3>
 
 
     {% if user.is_authenticated %}
-    <h3>Hello {{fname}}!</h3>
+    <h3>Hello {{user.first_name}}!</h3>
     <h4>You're successfully logged in.</h4>
-    <button type="conference"><a href="/paper_detail">Add a Conference</a></button>
+    <button type="conference"><a href="/paper/upload">Add a Conference</a></button>
     <button type="submit"><a href="/signout">SignOut</a></button>
     {% else %}
     <button type="submit"><a href="/signup">SignUp</a></button>
