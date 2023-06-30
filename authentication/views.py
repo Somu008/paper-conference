@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.core.mail import EmailMessage, send_mail
@@ -19,7 +19,10 @@ def home(request: HttpRequest):
         ctx['user'] = request.user
     return render(request, "authentication/index.html", ctx)
 
-def signup(request):
+def signup(request: HttpRequest):
+    if request.user.is_authenticated:
+        return redirect('authentication:profile')
+
     if request.method == "POST":
         username = request.POST['username']
         fname = request.POST['fname']
@@ -58,6 +61,7 @@ def signup(request):
 
         if user_type == "group2":
             myuser.groups.add(Group.objects.get(name="Reviewers"))
+            ReviewerProfile.objects.create(user=myuser).save()
 
         myuser.save()
         messages.success(request, "Your Account has been created succesfully!! Please check your email to confirm your email address in order to activate your account.")
@@ -111,6 +115,9 @@ def activate(request,uidb64,token):
         return render(request,'activation_failed.html')
 
 def signin(request):
+    if request.user.is_authenticated:
+        return redirect('authentication:profile')
+
     if request.method == 'POST':
         username = request.POST['username']
         pass1 = request.POST['pass1']
@@ -130,7 +137,7 @@ def signin(request):
 def signout(request):
     logout(request)
     messages.success(request, "Logged out Successfully!!")
-    return redirect('authentication:shome')
+    return redirect('authentication:home')
 
 def paper_detail(request):
     return render(request, "authentication/paper_detail.html")

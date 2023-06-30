@@ -1,11 +1,7 @@
-from ast import Tuple
-from pyexpat import model
-from re import I
-from django.core.mail import send_mail, mail_admins
+from django.core.mail import mail_admins
 from django.shortcuts import render, redirect
 from django.contrib import messages, auth
 from django.contrib.auth import models
-from django.conf import settings
 from django.urls import reverse
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import user_passes_test, login_required
@@ -21,7 +17,7 @@ User = auth.get_user_model()
 @user_passes_test(is_reviewer)
 @login_required
 def profile(request: HttpRequest):
-    rprofile = ReviewerProfile.objects.get_or_create(user = request.user)
+    rprofile: ReviewerProfile = request.user.reviewerprofile # type: ignore
 
     if request.method == "POST":
         f_name = request.POST['fname']
@@ -54,22 +50,23 @@ def profile(request: HttpRequest):
 
 
         for key, val in updates.items():
-            rprofile[0].__setattr__(key, val)
-        print(domains)
-        rprofile[0].domains.set(Domain.objects.filter(short_name__in=domains))
+            rprofile.__setattr__(key, val)
+        rprofile.domains.set(Domain.objects.filter(short_name__in=domains))
 
-        rprofile[0].save()
+        print(updates, rprofile.profession, rprofile.clean_fields())
+        rprofile.save()
         user.save()
         return redirect('reviewer:profile')
 
     domains = Domain.objects.all()
-    return render(request, "Reviwer_detail/Reviewer_detail.html", { 'me': request.user, 'rprofile': rprofile[0], 'domains': domains })
+    return render(request, "Reviwer_detail/Reviewer_detail.html", { 'me': request.user, 'rprofile': rprofile, 'domains': domains })
 
+@login_required
 def submit_form(request):
     if request.method == 'POST':
         # Process the form data
         # Send email
-        rprofile = ReviewerProfile.objects.get(user=request.user)
+        rprofile = request.user.reviewerprofile #type: ignore
         rprofile.state = 'pending'
         rprofile.save()
 

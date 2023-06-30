@@ -39,12 +39,14 @@
         <div class="form-group">
             <label for="Profession">Profession:</label>
             <select class="form-control" name="profession" id="profession">
-                <option value="{{rprofile.profession}}" selected="selected">Professor</option>
+                <option value="" disabled selected>---</option>
+                <option value="professor" {%if rprofile.profession == 'professor' %} selected {%endif%}>Professor</option>
+                <option value="developer" {%if rprofile.profession == 'developer' %} selected {%endif%}>Developer</option>
               </select>
             </div>
         <div class="form-group">
             <label for="ins_name">Institue name:</label>
-            <input value="{{rprofile.institute}}" type="text" class="form-control" id="ins_name" name="ins_name" placeholder="Enter Institue name">
+            <input value="{{ rprofile.institute }}" type="text" class="form-control" id="ins_name" name="ins_name" placeholder="Enter Institue name">
         </div>
         <div class="form-group">
             <label for="H_Q">Higher Qualification: </label>
@@ -82,38 +84,35 @@
     {%endif%}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script>
-const tags = document.querySelectorAll(".form-control");
-const hide = document.getElementById("hide");
+        window.addEventListener('DOMContentLoaded', function() {
+            const tags = document.querySelectorAll(".form-control");
+            const hide = document.getElementById("hide");
 
-hide && hide.addEventListener("click", function () {
-    const submit_button = document.getElementById("save");
-    if (submit_button.style.display === "none") {
-        hide.innerHTML = "Cancel";
-        submit_button.style.display = "";
-        [...tags].map(t => {
-            t.removeAttribute('readonly')
-            t.removeAttribute('disabled')
+            hide && hide.addEventListener("click", function () {
+                const submit_button = document.getElementById("save");
+                if (submit_button.style.display === "none") {
+                    hide.innerHTML = "Cancel";
+                    submit_button.style.display = "";
+                    [...tags].map(t => {
+                        t.removeAttribute('readonly')
+                        t.removeAttribute('disabled')
+                    })
+                } else {
+                    hide.innerHTML = "Edit";
+                    submit_button.style.display = "none";
+                    [...tags].map(t => {
+                        t.setAttribute('readonly', '')
+                        t.setAttribute('disabled', '')
+                    })
+                }
+                return false;
+            });
+
+            [...tags].map(t => {
+                t.setAttribute('readonly', '')
+                t.setAttribute('disabled', '')
+            })
         })
-    } else {
-        hide.innerHTML = "Edit";
-        submit_button.style.display = "none";
-        [...tags].map(t => {
-            t.setAttribute('readonly', '')
-            t.setAttribute('disabled', '')
-        })
-    }
-    return false;
-})
-if (hide) {  // Only apply if, required buttons are present
-    // for (let p = 0; p < tags.length; p++) {
-    //     tags[p].setAttribute("readonly", "");
-    //     tags[p].setAttribute("disabled", "");
-    // }
-    [...tags].map(t => {
-        t.setAttribute('readonly', '')
-        t.setAttribute('disabled', '')
-    })
-}
     </script>
 </body>
 </html>
