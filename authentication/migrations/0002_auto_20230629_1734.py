@@ -17,11 +17,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='reviewerprofile',
-            name='domain',
-            field=models.CharField(blank=True, max_length=30, null=True),
-        ),
-        migrations.AddField(
-            model_name='reviewerprofile',
             name='institute',
             field=models.CharField(blank=True, max_length=100, null=True),
         ),

@@ -52,11 +52,10 @@
         </div>
         <div class="form-group">
             <label for="domain">Domain:</label>
-            <select class="form-control" name="domain" id="domain">
-                <option value="aiml">AIML</option>
-                <option value="cyber-security">Cyber-security</option>
-                <option value="clooud">Cloud technology</option>
-                <option value="networking">Networking</option>
+            <select multiple class="form-control" name="domains" id="domains">
+                {%for  domain in domains%}
+                    <option value="{{domain.short_name}}" {% if domain in rprofile.domains.all %} selected {%endif%}>{{domain.name}}</option>
+                {%endfor%}
             </select>
         </div>
         <div class="form-group">

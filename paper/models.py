@@ -2,7 +2,17 @@ from os import name
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
+
+
+class Domain(models.Model):
+    short_name = models.CharField(max_length=20)
+    name = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return self.short_name
+
+
 class Paper(models.Model):
     name = models.CharField(max_length=20,null=True)
     author_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -16,6 +26,7 @@ class Paper(models.Model):
         ("rejected", "rejected")
     ))
     reviewer_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name="reviewer")
+    domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"Paper {self.pk} by {self.name}"

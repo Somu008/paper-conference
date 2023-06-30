@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.conf import settings
 
-from .models import Paper
+from .models import Domain, Paper
 # from . tokens import generate_token
 
 
@@ -27,7 +27,7 @@ def paper(request: HttpRequest):
         paper = request.FILES['paper']
         authors = [request.POST[f"co_author{i}"] for i in range(int(Co_author))]
 
-        reviewer = get_reviewer_with_min_papers()
+        reviewer = get_reviewer_with_min_papers(domain)
 
         new_paper = Paper.objects.create(
             author_id=request.user,
@@ -36,14 +36,15 @@ def paper(request: HttpRequest):
             mentor = Mname,
             institute = Institute,
             paper = paper,
-            reviewer_id= reviewer
+            reviewer_id= reviewer,
+            domain = Domain.objects.get(short_name=domain)
         )
         new_paper.save()
 
         reviewer.email_user("Assigned to you", f"Paper with id {new_paper.pk} is assigned to you", settings.EMAIL_HOST_USER)
 
         return redirect(reverse('paper:paper_detail', args=[new_paper.pk]))
-    return render(request, "authentication/upload_paper.html")
+    return render(request, "authentication/upload_paper.html", { 'domains': Domain.objects.all() })
 
 @login_required
 def paper_detail(request, id):
@@ -54,7 +55,7 @@ def paper_detail(request, id):
 def papers(request):
     papers = []
     if is_reviewer(request.user):
-        if request.user.reviewerprofile_set.get().state != 'pending':
+        if request.user.reviewerprofile_set.get().state == 'pending':
             messages.error(request, 'Please complete your profile first')
             return redirect('reviewer:profile')
 

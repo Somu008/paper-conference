@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from authentication.models import ReviewerProfile
 
 from authentication.utils import is_reviewer
+from paper.models import Domain
 
 User = auth.get_user_model()
 
@@ -30,7 +31,7 @@ def profile(request: HttpRequest):
         profession = request.POST.get('profession')
         institute = request.POST.get('ins_name')
         qualification = request.POST.get('H_Q')
-        domain = request.POST.get('domain')
+        domains = request.POST.getlist('domains')
 
         resume = request.FILES.get('resume')
 
@@ -46,7 +47,6 @@ def profile(request: HttpRequest):
                 'profession': profession,
                 'institute': institute,
                 'qualification': qualification,
-                'domain': domain,
         }
 
         if resume:
@@ -55,12 +55,15 @@ def profile(request: HttpRequest):
 
         for key, val in updates.items():
             rprofile[0].__setattr__(key, val)
+        print(domains)
+        rprofile[0].domains.set(Domain.objects.filter(short_name__in=domains))
 
         rprofile[0].save()
         user.save()
         return redirect('reviewer:profile')
 
-    return render(request, "Reviwer_detail/Reviewer_detail.html", { 'me': request.user, 'rprofile': rprofile[0] })
+    domains = Domain.objects.all()
+    return render(request, "Reviwer_detail/Reviewer_detail.html", { 'me': request.user, 'rprofile': rprofile[0], 'domains': domains })
 
 def submit_form(request):
     if request.method == 'POST':
