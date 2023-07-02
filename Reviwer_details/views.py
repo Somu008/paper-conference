@@ -18,7 +18,8 @@ User = auth.get_user_model()
 @login_required
 def profile(request: HttpRequest):
     rprofile: ReviewerProfile = request.user.reviewerprofile # type: ignore
-
+    if rprofile.state == 'accepted':
+        return redirect('paper:paper_list')
     if request.method == "POST":
         f_name = request.POST['fname']
         l_name = request.POST['lname']

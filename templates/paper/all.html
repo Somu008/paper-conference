@@ -1,7 +1,55 @@
-{%for paper in papers %}
-<section>
-    <h2>{{paper.name}}</h2>
-    <p>{{paper.status}}</p>
-    <a href="/paper/{{paper.id}}">View</a>
-</section>
-{%endfor%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css"
+    />
+    <title>Papers</title>
+    <style>
+      .container {
+        margin: 20px;
+      }
+
+      .menu {
+        margin-bottom: 20px;
+      }
+
+      .segment {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="ui secondary menu">
+        <a class="item active" href="index.html">Home</a>
+        {% comment %}if user is not authenticated show sign up and sign in{% endcomment %}
+        {% if not user.is_authenticated %}
+        <a class="item" href="/signup">Sign Up</a>
+        <a class="item" href="/signin">Sign In</a>
+        {% endif %}
+        <div class="right menu">
+          {% if user.is_authenticated %}
+          <div class="item">
+            <a class="ui red button" href="/signout">Sign Out</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <h1 class="ui header">Papers</h1>
+
+      {% for paper in papers %}
+      <section class="ui raised segment">
+        <h2 class="ui header">{{ paper.name }}</h2>
+        <p>
+          <strong>Status:</strong> {{ paper.status }}
+        </p>
+        <a class="ui primary button" href="/paper/{{ paper.id }}">View</a>
+      </section>
+      {% endfor %}
+    </div>
+  </body>
+</html>

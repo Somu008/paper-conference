@@ -35,7 +35,7 @@ def paper(request: HttpRequest):
         )
         new_paper.save()
 
-        reviewer.email_user("Assigned to you", f"Paper with id {new_paper.pk} is assigned to you", settings.EMAIL_HOST_USER)
+        reviewer.email_user("Kindly review the paper assigned to you..!", f"Paper with id {new_paper.pk} is assigned to you", settings.EMAIL_HOST_USER)
 
         return redirect(reverse('paper:paper_detail', args=[new_paper.pk]))
     return render(request, "authentication/upload_paper.html", { 'domains': Domain.objects.all() })
@@ -67,7 +67,7 @@ def update_paper(request, id, action):
 
     paper.save()
     comment = request.POST.get("comment")
-    paper.author_id.email_user("Upadate on your paper", f"Paper with id {paper.pk} has been {paper.status}\n REASON: {comment}", settings.EMAIL_HOST_USER)
+    paper.author_id.email_user("Status upadate on your paper..!", f"Paper with id {paper.pk} has been {paper.status}\n REASON: {comment}", settings.EMAIL_HOST_USER)
 
     return redirect("paper:paper_detail", id)
 
